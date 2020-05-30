@@ -53,6 +53,7 @@ enum type_of_lex { //перечислимый тип лексем
 	POLIZ_ADDRESS,
 	POLIZ_GO,
 	POLIZ_FGO,
+	POLIZ_DUP,
 	lex_UNOM,
 	lex_UNOP
 };
@@ -196,27 +197,27 @@ class Lex { //клас лексем
 		case lex_NULL:
             out << "NULL ";
             break;
-		case POLIZ_LABEL:
-			out << "POLIZ_LABEL"<< l.v_lex << " ";
-			break;
-		case POLIZ_ADDRESS:
-			out << "POLIZ_ADDRESS" << l.v_lex << " ";
-			break;
-		case POLIZ_GO:
-			out << "POLIZ_GO ";
-			break;
-		case POLIZ_FGO:
-			out << "POLIZ_FGO ";
-			break;	
-		case lex_UNOM:
-			out << "UNOM ";
-			break;
-		case lex_UNOP:
-			out << "UNOP ";
-			break;				
-		}
-		//out << l.str << " ";
-        //out << '(' << l.t_lex << ',' << l.v_lex << ");";
+	case POLIZ_LABEL:
+		out << "POLIZ_LABEL"<< l.v_lex << " ";
+		break;
+	case POLIZ_ADDRESS:
+		out << "POLIZ_ADDRESS" << l.v_lex << " ";
+		break;
+	case POLIZ_GO:
+		out << "POLIZ_GO ";
+		break;
+	case POLIZ_FGO:
+		out << "POLIZ_FGO ";
+		break;	
+	case lex_UNOM:
+		out << "UNOM ";
+		break;
+	case lex_UNOP:
+		out << "UNOP ";
+		break;
+	case POLIZ_DUP:
+		out << "DUP ";			
+	}
         return out;
     }
 };

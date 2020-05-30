@@ -20,6 +20,8 @@ class Parser {
   stack < int > st_int;
   stack < type_of_lex >  st_lex;
   stack < int > st_break;
+  stack < int > st_if_true;
+  stack < int > st_if_false;
   void P();
   void D();
   void D1();
@@ -141,6 +143,10 @@ void Parser::S (int p=-1) {						//S обрабатывает операторы
 			throw curr_lex;
 		get_next_lex();
 		
+		while (!st_if_true.empty()){
+			poliz[st_if_true.top()]=Lex(POLIZ_LABEL,poliz.size());
+			st_if_true.pop();
+		}
 		
 		if (c_type == lex_LBRAC){		//составной оператор Внутри 'if-then'
 			get_next_lex();
@@ -153,15 +159,25 @@ void Parser::S (int p=-1) {						//S обрабатывает операторы
 				throw curr_lex;
 		}
 		get_next_lex();
+
 		if (c_type == lex_ELSE){
 			p2 = poliz.size ();
 			poliz.push_back ( Lex() );
 			poliz.push_back (Lex(POLIZ_GO));
 			poliz[p1] = Lex(POLIZ_LABEL, poliz.size());
+
+			while (!st_if_false.empty()){
+				poliz[st_if_false.top()]=Lex(POLIZ_LABEL,poliz.size());
+				st_if_false.pop();
+			}
 			get_next_lex();
 			S(p);
 			poliz[p2] = Lex(POLIZ_LABEL, poliz.size());
 		}else{
+			while (!st_if_false.empty()){
+				poliz[st_if_false.top()]=Lex(POLIZ_LABEL,poliz.size());
+				st_if_false.pop();
+			}
 			poliz[p1] = Lex(POLIZ_LABEL, poliz.size());
 			S(p);
 		}
@@ -262,7 +278,7 @@ void Parser::E () {
 		st_lex.push (TID[c_val].get_type());
 		get_next_lex();
 		if (c_type == lex_ASSIGN) {
-			poliz.push_back (Lex (POLIZ_ADDRESS, value_assign));  //сюда
+			poliz.push_back (Lex (POLIZ_ADDRESS, value_assign)); 
 			flag_assign=false;
 			get_next_lex ();
 			E();
@@ -277,7 +293,14 @@ void Parser::E () {
  
 void Parser::E1 () {
 	E2();
-	while (c_type == lex_OR) {
+	while (c_type == lex_OR) {			//ленивые вычисления
+		poliz.push_back(Lex(POLIZ_DUP));
+		poliz.push_back(Lex(POLIZ_LABEL,poliz.size()+4));
+		poliz.push_back(Lex(POLIZ_FGO));
+		st_if_true.push(poliz.size());
+		poliz.push_back(Lex());
+		poliz.push_back(Lex(POLIZ_GO));
+
 		st_lex.push (c_type);
 		get_next_lex ();
 		E2();
@@ -287,7 +310,12 @@ void Parser::E1 () {
  
 void Parser::E2 () {
 	E3();
-	while ( c_type == lex_AND) {
+	while ( c_type == lex_AND) {			//ленивые вычисления
+		poliz.push_back(Lex(POLIZ_DUP));
+		st_if_false.push(poliz.size());
+		poliz.push_back(Lex());
+		poliz.push_back(Lex(POLIZ_FGO));
+
 		st_lex.push (c_type);
 		get_next_lex();
 		E3();
