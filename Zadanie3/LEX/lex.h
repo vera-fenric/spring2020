@@ -48,19 +48,29 @@ enum type_of_lex { //перечислимый тип лексем
     lex_NUMB,
     lex_STR, //35
     lex_FIN, //36
-    lex_BREAK //37
+    lex_BREAK, //37
+	POLIZ_LABEL,
+	POLIZ_ADDRESS,
+	POLIZ_GO,
+	POLIZ_FGO,
+	lex_UNOM,
+	lex_UNOP
 };
 
 class Lex { //клас лексем
     type_of_lex t_lex; //тип лексемы
     int v_lex; //номер в строчке массива лексем
+	int str; //номер строки, в которой встретилась лексема
 
     public:
         Lex(type_of_lex t = lex_NULL, int v = 0) {
             t_lex = t;
             v_lex = v;
+			str = 0;
         }
-
+	void set_str(int i){
+		str=i;
+	}
     type_of_lex get_type() {
         return t_lex;
     }
@@ -70,12 +80,148 @@ class Lex { //клас лексем
     }
 
     friend ostream & operator << (ostream & out, Lex l) {
-        out << '(' << l.t_lex << ',' << l.v_lex << ");";
+		type_of_lex t = l.t_lex;
+		switch (t) {
+        case lex_AND:
+            out << "AND ";
+            break;
+        case lex_OR:
+            out << "OR ";
+            break;
+        case lex_NOT:
+            out << "NOT ";
+            break;
+        case lex_IF:
+            out << "IF ";
+            break;
+        case lex_ELSE:
+            out << "ELSE ";
+            break;
+        case lex_DO:
+            out << "DO ";
+            break;
+        case lex_WHILE:
+            out << "WHILE ";
+            break;
+        case lex_READ:
+            out << "READ ";
+            break;
+        case lex_WRITE:
+            out << "WRITE ";
+            break;
+        case lex_STRING:
+            out << "STRING ";
+            break;
+        case lex_BOOL:
+            out << "BOOL ";
+            break;
+        case lex_INT:
+            out << "INT ";
+            break;
+        case lex_TRUE:
+            out << "TRUE ";
+            break;
+        case lex_FALSE:
+            out << "FALSE ";
+            break;
+        case lex_PROGRAM:
+            out << "PROGRAM ";
+            break;
+        case lex_SEMICOLON:
+            out << "; ";
+            break;
+        case lex_COMMA:
+            out << ", ";
+            break;
+        case lex_ASSIGN:
+            out << "= ";
+            break;
+        case lex_LPAREN:
+            out << "( ";
+            break;
+        case lex_RPAREN:
+            out << ") ";
+            break;
+        case lex_EQ:
+            out << "== ";
+            break;
+        case lex_LSS:
+            out << "< ";
+            break;
+        case lex_GTR:
+            out << "> ";
+            break;
+        case lex_LEQ:
+            out << "<= ";
+            break;
+        case lex_REQ:
+            out << ">= ";
+            break;
+        case lex_NEQ:
+            out << "!= ";
+            break;
+        case lex_PLUS:
+            out << "+ ";
+            break;
+        case lex_MINUS:
+            out << "- ";
+            break;
+        case lex_TIMES:
+            out << "* ";
+            break;
+        case lex_SLASH:
+            out << "/ ";
+            break;
+        case lex_LBRAC:
+            out << "{ ";
+            break;
+        case lex_RBRAC:
+            out << "} ";
+            break;
+        case lex_ID:
+            out << "ID" << l.v_lex << " ";
+            break;
+        case lex_FIN:
+            out << "FINAL ";
+            break;
+        case lex_NUMB:
+            out << "NUMB ";
+            break;
+        case lex_STR:
+            out << "STR ";
+            break;
+        case lex_BREAK:
+            out << "BREAK ";
+            break;
+		case lex_NULL:
+            out << "NULL ";
+            break;
+		case POLIZ_LABEL:
+			out << "POLIZ_LABEL"<< l.v_lex << " ";
+			break;
+		case POLIZ_ADDRESS:
+			out << "POLIZ_ADDRESS" << l.v_lex << " ";
+			break;
+		case POLIZ_GO:
+			out << "POLIZ_GO ";
+			break;
+		case POLIZ_FGO:
+			out << "POLIZ_FGO ";
+			break;	
+		case lex_UNOM:
+			out << "UNOM ";
+			break;
+		case lex_UNOP:
+			out << "UNOP ";
+			break;				
+		}
+		//out << l.str << " ";
+        //out << '(' << l.t_lex << ',' << l.v_lex << ");";
         return out;
     }
 };
 
-void record(type_of_lex t) { //функция для вывода лексемы в файл res
+void record(type_of_lex t) { //функция для вывода лексемы в файл out
     switch (t) {
         case lex_AND:
             res << "lex_AND ";
@@ -188,9 +334,11 @@ void record(type_of_lex t) { //функция для вывода лексемы
         case lex_BREAK:
             res << "lex_BREAK ";
             break;
-	case lex_NULL:
+		case lex_NULL:
             res << "lex_NULL ";
             break;
+		default:
+			break;
     }
 }
 

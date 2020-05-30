@@ -7,17 +7,19 @@
 
 
 class Ident { //класс идентификатор
+	protected:
     char * name; //имя
-    bool declare; //в методичке сказано, что понадобится после
+    bool declare;
     type_of_lex type; //тип идентификатора по типу лексемы
-    bool assign; //в методичке сказано, что понадобится после
-    int value; //значение
+    bool assign;
+	int value;
 
     public:
     Ident() {
         declare = false;
         assign = false;
         name = NULL;
+		type = lex_NULL;
     }
 	~Ident() {
         if (name!=NULL)
@@ -58,14 +60,14 @@ class Ident { //класс идентификатор
     void set_assign() {
         assign = true;
     }
-
-    int get_value() const {
-        return value;
-    }
-
-    void set_value(int v) {
-        value = v;
-    }
+	
+	int get_value() const {
+		return value;
+	}
+	
+	void set_value (int v){
+		value = v;
+	}
 };
 
 
