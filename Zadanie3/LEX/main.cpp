@@ -18,7 +18,7 @@ int main(int argc, char ** argv) {
     if (argc<3) return 0;
     res.open(argv[2]);
     type_of_lex t = lex_NULL;
-    lex f;
+    Lex f;
     Scanner ob1(argv[1]);
     while (t != lex_FIN) {
         f = ob1.get_lex();

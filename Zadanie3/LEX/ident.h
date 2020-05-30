@@ -14,14 +14,14 @@ class Ident { //класс идентификатор
     int value; //значение
 
     public:
-        Ident() {
-            declare = false;
-            assign = false;
-            name = NULL;
-        }
+    Ident() {
+        declare = false;
+        assign = false;
+        name = NULL;
+    }
 	~Ident() {
-            if (name!=NULL)
-		delete[] name;
+        if (name!=NULL)
+			delete[] name;
 	}
 
     char * get_name() {
@@ -29,8 +29,8 @@ class Ident { //класс идентификатор
     }
 
     void set_name(const char * n) {
-	if (name!=NULL)
-		delete[] name;
+		if (name!=NULL)
+			delete[] name;
         name = new char[strlen(n) + 1];
         strcpy(name, n);
     }
@@ -89,6 +89,8 @@ class tabl_ident { //класс таблица идентификаторов
     }
 
     Ident & operator[](int k) { //перегрузка операции [] для получения непосредственно идентификатора
+		if ((k<0)||(k>=top))
+			throw "Wrond range";
         return p[k];
     }
 

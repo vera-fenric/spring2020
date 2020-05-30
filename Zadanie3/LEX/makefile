@@ -1,7 +1,7 @@
 CXXOPTIONS = -Wall -Werror
 VALOPTIONS = --leak-check=full
 
-all: main
+all: clean main
 
 main: main.o
 	g++ main.o -o lex

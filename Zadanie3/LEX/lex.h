@@ -8,8 +8,7 @@
 #include <iostream>
 
 using namespace std;
-
-ofstream res; //переменная типа ofstream для удобного вывода в файл
+ofstream res;
 
 enum type_of_lex { //перечислимый тип лексем
     lex_NULL, //0
@@ -52,12 +51,12 @@ enum type_of_lex { //перечислимый тип лексем
     lex_BREAK //37
 };
 
-class lex { //клас лексем
+class Lex { //клас лексем
     type_of_lex t_lex; //тип лексемы
     int v_lex; //номер в строчке массива лексем
 
     public:
-        lex(type_of_lex t = lex_NULL, int v = 0) {
+        Lex(type_of_lex t = lex_NULL, int v = 0) {
             t_lex = t;
             v_lex = v;
         }
@@ -70,7 +69,7 @@ class lex { //клас лексем
         return v_lex;
     }
 
-    friend ostream & operator << (ostream & out, lex l) {
+    friend ostream & operator << (ostream & out, Lex l) {
         out << '(' << l.t_lex << ',' << l.v_lex << ");";
         return out;
     }
