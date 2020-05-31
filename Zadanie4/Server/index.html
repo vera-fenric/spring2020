@@ -1,11 +1,48 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>Index</title>
-	</head>
-	<body>
-		<h1>Welcome to index.html!</h1>
-		<p>My first page</p>
-	</body>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная страница</title>
+    <style>
+        body {
+            color: white;
+            font-family: Verdana;
+            background: #4682B4;
+            font-size: 150%;
+        }
+        a {
+            color: white;
+        }
+        table {
+            width: 100%;
+        }
+        td {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid block-error">
+        <div class="row">
+            <div class="col-sm-8">
+                <h1>Главная страница</h1>
+<img src="pics/index.jpg" alt="index"
+                     class="img-responsive" align=right height=350px/>
+                <p>Добро пожаловать на главную страницу сайта с пока ещё не определившимся названием!</p>
+		<p>Отсюда вы можете:</p>
+                <ul>
+                    <li>Получить доступ к файлу <a href="/test.txt">test.txt</a>;</li>
+                    <li>Обратиться несуществующему файлу <a href="/abc">abc</a>;</li>
+                    <li>Обратиться к недоступному файлу <a href="/index.html">index.html</a>;</li>
+		    <li>Запустить <a href="/cgi-bin/hello">Hello_world.exe</a>;</li>
+		    <li>Запустить <a href="/cgi-bin/analizator">анализатор модельного языка</a>;</li>
+		    <li>А также вновь попытаться попасть на <a href="/">главую страницу</a>!</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
 </html>
+
