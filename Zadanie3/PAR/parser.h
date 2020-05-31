@@ -13,10 +13,10 @@ using namespace std;
 class Parser {
   bool flag_assign;
   int value_assign;
-  Lex           curr_lex;
-  type_of_lex   c_type;
-  int           c_val;
-  Scanner       scan;
+  Lex curr_lex;
+  type_of_lex c_type;
+  int c_val;
+  Scanner scan;
   stack < int > st_int;
   stack < type_of_lex >  st_lex;
   stack < int > st_break;
@@ -107,7 +107,6 @@ void Parser::D1 () {					//D1() обрабатывает одно описани
 				get_next_lex();
 				E1();
 				eq_type();
-				poliz.push_back (Lex (lex_ASSIGN));
 			}
 			if (c_type==lex_COMMA)		//если , идём дальше
 				get_next_lex();
@@ -119,6 +118,7 @@ void Parser::D1 () {					//D1() обрабатывает одно описани
 void Parser::B (int p=-1) {						//B() обрабатывает операторы
 	S(p);
     while (c_type == lex_SEMICOLON) {
+		poliz.push_back(curr_lex);
 		get_next_lex ();
 		while (!st_lex.empty())
 			st_lex.pop();
@@ -142,7 +142,6 @@ void Parser::S (int p=-1) {						//S обрабатывает операторы
 		if (c_type != lex_RPAREN)
 			throw curr_lex;
 		get_next_lex();
-		
 		while (!st_if_true.empty()){
 			poliz[st_if_true.top()]=Lex(POLIZ_LABEL,poliz.size());
 			st_if_true.pop();
@@ -159,13 +158,11 @@ void Parser::S (int p=-1) {						//S обрабатывает операторы
 				throw curr_lex;
 		}
 		get_next_lex();
-
 		if (c_type == lex_ELSE){
 			p2 = poliz.size ();
 			poliz.push_back ( Lex() );
 			poliz.push_back (Lex(POLIZ_GO));
 			poliz[p1] = Lex(POLIZ_LABEL, poliz.size());
-
 			while (!st_if_false.empty()){
 				poliz[st_if_false.top()]=Lex(POLIZ_LABEL,poliz.size());
 				st_if_false.pop();
@@ -202,11 +199,21 @@ void Parser::S (int p=-1) {						//S обрабатывает операторы
 			throw curr_lex;
 		get_next_lex();
 		E1();
-		poliz.push_back (Lex(lex_WRITE));
+		if (st_lex.top()==lex_STRING)
+			poliz.push_back (Lex(WRITE_STRING));
+		else if (st_lex.top()==lex_BOOL)
+			poliz.push_back (Lex(WRITE_BOOL));
+		else
+			poliz.push_back (Lex(lex_WRITE));
 		while (c_type==lex_COMMA){
 			get_next_lex();
 			E1();
-			poliz.push_back (Lex(lex_WRITE));
+			if (st_lex.top()==lex_STRING)
+				poliz.push_back (Lex(WRITE_STRING));
+			else if (st_lex.top()==lex_BOOL)
+				poliz.push_back (Lex(WRITE_BOOL));
+			else
+				poliz.push_back (Lex(lex_WRITE));
 		}
 		if (c_type != lex_RPAREN)
 			throw curr_lex;
@@ -278,12 +285,11 @@ void Parser::E () {
 		st_lex.push (TID[c_val].get_type());
 		get_next_lex();
 		if (c_type == lex_ASSIGN) {
-			poliz.push_back (Lex (POLIZ_ADDRESS, value_assign)); 
+			poliz.push_back (Lex (POLIZ_ADDRESS, value_assign));
 			flag_assign=false;
 			get_next_lex ();
 			E();
 			eq_type();
-			poliz.push_back (Lex (lex_ASSIGN));
 		}else{
 			E1();
 		}
@@ -293,14 +299,14 @@ void Parser::E () {
  
 void Parser::E1 () {
 	E2();
-	while (c_type == lex_OR) {			//ленивые вычисления
+	while (c_type == lex_OR) {
 		poliz.push_back(Lex(POLIZ_DUP));
 		poliz.push_back(Lex(POLIZ_LABEL,poliz.size()+4));
 		poliz.push_back(Lex(POLIZ_FGO));
 		st_if_true.push(poliz.size());
 		poliz.push_back(Lex());
 		poliz.push_back(Lex(POLIZ_GO));
-
+		
 		st_lex.push (c_type);
 		get_next_lex ();
 		E2();
@@ -310,12 +316,12 @@ void Parser::E1 () {
  
 void Parser::E2 () {
 	E3();
-	while ( c_type == lex_AND) {			//ленивые вычисления
+	while ( c_type == lex_AND) {
 		poliz.push_back(Lex(POLIZ_DUP));
 		st_if_false.push(poliz.size());
 		poliz.push_back(Lex());
 		poliz.push_back(Lex(POLIZ_FGO));
-
+		
 		st_lex.push (c_type);
 		get_next_lex();
 		E3();
@@ -381,7 +387,6 @@ void Parser::E5(){
 
 void Parser::E6(){
 	if ((c_type==lex_NOT)&&(!flag_assign)){
-		//st_lex.push (c_type);
 		get_next_lex();
 		E7();
 		check_not();
@@ -401,7 +406,9 @@ void Parser::E7(){
 		get_next_lex ();
 	}else if ( c_type == lex_NUMB ) {
 		st_lex.push ( lex_INT );
-		poliz.push_back ( curr_lex );
+		int k;
+		DL.get_dig(k);
+		poliz.push_back (Lex(lex_NUMB,k));
 		get_next_lex ();
 	}else if ( c_type == lex_TRUE ) {
 		st_lex.push ( lex_BOOL );
@@ -446,46 +453,7 @@ void Parser::check_id () {
 		throw "not declared";
 }
  
-void Parser::check_op () {
-	type_of_lex o1, o2, op;
- 
-	o2 = st_lex.top();
-	st_lex.pop();
-	op = st_lex.top();
-	st_lex.pop();
-	o1 = st_lex.top();
-	st_lex.pop();
-	if (op==lex_PLUS)
-		if ((o1==o2)&&(o1==lex_STRING))
-			st_lex.push(lex_STRING);
-		else if ((o1==o2)&&(o1==lex_INT))
-			st_lex.push(lex_INT);
-		else
-			throw "Wrong types +";
-	if ((op==lex_MINUS)||(op==lex_TIMES)||(op==lex_SLASH))
-		if ((o1==o2)&&(o1==lex_INT))
-			st_lex.push(lex_INT);
-		else
-			throw "Wrong types - * /";
-	if ((op ==lex_EQ)||(op==lex_LEQ)||(op==lex_REQ)||(op==lex_NEQ))
-		if ((o1==o2)&&(o1==lex_STRING))
-			st_lex.push(lex_BOOL);
-		else if ((o1==o2)&&(o1==lex_INT))
-			st_lex.push(lex_BOOL);
-		else
-			throw "Wrong types == != < >";
-	if ((op==lex_LSS)||(op==lex_GTR))
-		if ((o1==o2)&&(o1==lex_INT))
-			st_lex.push(lex_BOOL);
-		else
-			throw "Wrong types >= <=";
-	if ((op==lex_AND)||(op==lex_OR))
-		if ((o1==o2)&&(o1==lex_BOOL))
-			st_lex.push(lex_BOOL);
-		else
-			throw "Wrong types and or";	
-	poliz.push_back (Lex (op));
-}
+
  
 void Parser::check_not () {
 	if (st_lex.top() != lex_BOOL)
@@ -498,7 +466,56 @@ void Parser::check_uno () {
 	if (st_lex.top() != lex_INT)
 		throw "Wrong type uno";
 }
+void Parser::check_op () {
+	type_of_lex o1, o2, op;
  
+	o2 = st_lex.top();
+	st_lex.pop();
+	op = st_lex.top();
+	st_lex.pop();
+	o1 = st_lex.top();
+	st_lex.pop();
+	if (o1!=o2)
+		throw "Invalid operands ";
+	if (o1==lex_STRING){
+		if (op==lex_PLUS){
+			st_lex.push(lex_STRING);
+			poliz.push_back (Lex (PLUS_STRING));
+		}else if (op == lex_EQ){
+			st_lex.push(lex_BOOL);
+			poliz.push_back (Lex (EQ_STRING));
+		}else if (op == lex_NEQ){
+			st_lex.push(lex_BOOL);
+			poliz.push_back (Lex (NEQ_STRING));
+		}else if (op == lex_LEQ){
+			st_lex.push(lex_BOOL);
+			poliz.push_back (Lex (LSS_STRING));
+		}else if (op == lex_REQ){
+			st_lex.push(lex_BOOL);
+			poliz.push_back (Lex (GTR_STRING));
+		}else
+			throw "Invalid operands ";
+		return;
+	}
+	
+	if (o1==lex_BOOL){
+		if ((op==lex_AND)||(op==lex_OR))
+			st_lex.push(lex_BOOL);
+		else
+			throw "Invalid operands ";
+	}
+	
+	if (o1==lex_INT){
+		if ((op==lex_PLUS)||(op==lex_MINUS)||(op==lex_TIMES)||(op==lex_SLASH))
+			st_lex.push(lex_INT);
+		else if ((op ==lex_EQ)||(op==lex_GTR)||(op==lex_LSS)||(op==lex_NEQ)||(op==lex_LEQ)||(op==lex_REQ))
+			st_lex.push(lex_BOOL);
+		else
+			throw "Invalid operands ";
+	}
+	poliz.push_back (Lex (op));
+}
+
 void Parser::eq_type () {
 	type_of_lex t;
 	t=st_lex.top();
@@ -506,6 +523,12 @@ void Parser::eq_type () {
 	if ( t != st_lex.top())
 		throw "Wrong types in assign";
 	st_lex.pop();
+	if (t==lex_INT)
+		poliz.push_back(Lex(lex_ASSIGN));
+	if (t==lex_BOOL)
+		poliz.push_back(Lex(lex_ASSIGN));
+	if (t==lex_STRING)
+		poliz.push_back(Lex(ASSIGN_STRING));
 }
  
 void Parser::eq_bool () {

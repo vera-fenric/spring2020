@@ -51,27 +51,31 @@ enum type_of_lex { //перечислимый тип лексем
     lex_BREAK, //37
 	POLIZ_LABEL,
 	POLIZ_ADDRESS,
-	POLIZ_GO,
+	POLIZ_GO, //40
 	POLIZ_FGO,
 	POLIZ_DUP,
 	lex_UNOM,
-	lex_UNOP
+	lex_UNOP,
+	PLUS_STRING, //45
+	ASSIGN_STRING,
+	LSS_STRING,
+	GTR_STRING,
+	EQ_STRING,
+	NEQ_STRING, //50
+	WRITE_STRING,
+	WRITE_BOOL //52
 };
 
 class Lex { //клас лексем
     type_of_lex t_lex; //тип лексемы
     int v_lex; //номер в строчке массива лексем
-	int str; //номер строки, в которой встретилась лексема
 
     public:
         Lex(type_of_lex t = lex_NULL, int v = 0) {
             t_lex = t;
             v_lex = v;
-			str = 0;
         }
-	void set_str(int i){
-		str=i;
-	}
+	
     type_of_lex get_type() {
         return t_lex;
     }
@@ -197,27 +201,51 @@ class Lex { //клас лексем
 		case lex_NULL:
             out << "NULL ";
             break;
-	case POLIZ_LABEL:
-		out << "POLIZ_LABEL"<< l.v_lex << " ";
-		break;
-	case POLIZ_ADDRESS:
-		out << "POLIZ_ADDRESS" << l.v_lex << " ";
-		break;
-	case POLIZ_GO:
-		out << "POLIZ_GO ";
-		break;
-	case POLIZ_FGO:
-		out << "POLIZ_FGO ";
-		break;	
-	case lex_UNOM:
-		out << "UNOM ";
-		break;
-	case lex_UNOP:
-		out << "UNOP ";
-		break;
-	case POLIZ_DUP:
-		out << "DUP ";			
-	}
+		case POLIZ_LABEL:
+			out << "POLIZ_LABEL"<< l.v_lex << " ";
+			break;
+		case POLIZ_ADDRESS:
+			out << "POLIZ_ADDRESS" << l.v_lex << " ";
+			break;
+		case POLIZ_GO:
+			out << "POLIZ_GO ";
+			break;
+		case POLIZ_FGO:
+			out << "POLIZ_FGO ";
+			break;	
+		case lex_UNOM:
+			out << "UNOM ";
+			break;
+		case lex_UNOP:
+			out << "UNOP ";
+			break;
+		case POLIZ_DUP:
+			out << "DUP ";
+			break;
+		case PLUS_STRING:
+			out << "+S ";
+			break;
+		case ASSIGN_STRING:
+			out << "=S ";
+			break;
+		case LSS_STRING:
+			out << "<S ";
+			break;
+		case GTR_STRING:
+			out << ">S ";
+			break;
+		case EQ_STRING:
+			out << "==S ";
+			break;
+		case NEQ_STRING:
+			out << "!= ";
+			break;
+		case WRITE_STRING:
+			out << "WRITES ";
+			break;
+		case WRITE_BOOL:
+			out << "WRITEB ";
+		}
         return out;
     }
 };

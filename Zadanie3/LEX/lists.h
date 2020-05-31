@@ -38,12 +38,12 @@ class digit_list { //класс FIFO список чисел из програм
         last -> dig = d;
         last -> next = new digit;
         last = last -> next;
-	last ->next = NULL;
+		last ->next = NULL;
     }
 
     int get_dig(int & a) { //получение числа из списка (значение записывается в параметр)
         digit * p;
-        if ((first == last) || (first = NULL))
+        if ((first == last) || (first == NULL))
             return 0;
         p = first;
         a = p -> dig;
@@ -55,7 +55,7 @@ class digit_list { //класс FIFO список чисел из програм
     void print_digits() { //метод, выводящий все числа из списка, не разрушая его
         digit * p = first;
         while ((p != last)&&(p!=NULL)) {
-            res << p -> dig << ' ';
+            cout << p -> dig << ' ';
             p = p -> next;
         }
     }
@@ -71,7 +71,6 @@ class digit_list { //класс FIFO список чисел из програм
 
 
 class str_list { //класс FIFO список строк из программы (нужно для работы следующих этапов)
-        int size;
     struct str {
         char * s;
         str * next;
@@ -90,17 +89,17 @@ class str_list { //класс FIFO список строк из программ
         ~str_list() { //деструктор освобождающий всю память, если вдруг этого не произошло
             str * p;
             while ((first!=NULL)&&(first != last)) {
-		   p = first;
-		   first = first -> next;
-		   if (p -> s != NULL)
-		        delete[] p -> s;
-		   delete p;
-	    }
+				p = first;
+				first = first -> next;
+				if (p -> s != NULL)
+					delete[] p -> s;
+				delete p;
+			}
             if (first!=NULL){
-	           if (first -> s != NULL)
-			delete[] first -> s;
-	           delete first;
-	     }
+				if (first -> s != NULL)
+					delete[] first -> s;
+				delete first;
+			}
         }
 
     void add_str(const char * d) { //добавление строки в список
@@ -115,13 +114,12 @@ class str_list { //класс FIFO список строк из программ
     int get_str(char * a) { //получение строки из списка (значение записывается в параметр)
         str * p;
         if ((first == last)||(first==NULL)) {
-            strcpy(a, "");
             return 0;
         }
-        p = first;
+		p = first;
         strcpy(a, p -> s);
         first = first -> next;
-	delete p->s;
+		delete p->s;
         delete p;
         return 1;
     }
@@ -133,6 +131,15 @@ class str_list { //класс FIFO список строк из программ
             p = p -> next;
         }
     }
+	int count(){
+		str * p = first;
+		int c=0;
+		while ((p != last)&&(p!=NULL)) {
+            c++;
+			p=p->next;
+        }
+		return c;
+	}
 };
 
 class lex_list { //класс FIFO список лексем
